@@ -24,6 +24,13 @@ export interface PNResults {
   kVol: number;
   totalCalories: number;
   osmolarity: number;
+  calorieRatios: {
+    carb: number;
+    protein: number;
+    fat: number;
+  };
+  cnRatio: number; // Calorie to Nitrogen Ratio (NPC:N)
+  npcLipidRatio: number; // Lipid energy as % of Non-Protein Calories
 }
 
 export interface AdvancedPNInputs extends PNInputs {

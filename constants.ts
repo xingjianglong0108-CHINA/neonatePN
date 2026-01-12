@@ -9,7 +9,7 @@ export const CONCENTRATIONS = {
 export const CALORIES = {
   GLUCOSE: 3.4, // kcal/g
   AA: 4,      // kcal/g
-  FAT: 9,      // kcal/g (using 9 for calculations, sometimes 10 is used for lipid emulsions)
+  FAT: 9,      // kcal/g
   MILK: {
     standard: 0.67,
     preterm68: 0.68,
@@ -17,16 +17,26 @@ export const CALORIES = {
   }
 };
 
-export const OSMOLARITY_FACTORS = {
-  GLUCOSE: 50, // mOsm per 10% glucose in 1L (rough estimate)
-  AA: 80,      // mOsm per 1% in 1L
-  NA: 2,       // 2 mOsm per mmol
-  K: 2         // 2 mOsm per mmol
-};
-
 export const GUIDELINES = {
-  GIR: { min: 4, max: 12, unit: 'mg/kg/min' },
-  AA: { min: 1.5, max: 3.5, unit: 'g/kg' },
-  FAT: { min: 1.0, max: 3.5, unit: 'g/kg' },
-  CALORIES: { target: '80~90', unit: 'kcal/kg' }
+  GIR: {
+    preterm: { start: [4.0, 8.0], inc: [1.0, 2.0], max: 12.0 },
+    term: { start: [3.0, 5.0], inc: [1.0, 2.0], max: 10.0 }
+  },
+  AA: { start: [1.5, 2.5], inc: [1.0, 1.5], max: 3.5 },
+  FAT: { start: [1.0, 2.0], inc: [0.5, 1.0], max: 3.5 },
+  ELECTROLYTES: {
+    NA: {
+      preterm_low_bw: { transition: 0, stable: [2.0, 3.0], long: [2.0, 4.0] }, // <1500g
+      preterm_high_bw: { transition: 0, stable: [2.0, 3.0], long: [2.0, 3.0] }, // >1500g
+      term: { transition: 0, stable: [2.0, 3.0], long: [2.0, 3.0] }
+    },
+    K: {
+      preterm: { transition: 0, stable: [1.0, 2.0], long: [2.0, 3.0] },
+      term: { transition: 0, stable: [1.0, 2.0], long: [2.0, 3.0] }
+    }
+  },
+  MINERALS: {
+    preterm: { ca: [1.5, 2.0], p: [1.3, 1.7], mg: [0.2, 0.3] },
+    term: { ca: [1.0, 1.5], p: [0.8, 1.2], mg: [0.2, 0.3] }
+  }
 };
