@@ -103,29 +103,29 @@ const CalculatorAdvanced: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Display Area */}
+        {/* Main Display Area - Header Changed to Light Blue */}
         <div className="lg:col-span-8 space-y-6">
           <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-            <div className="bg-slate-900 text-white p-10">
+            <div className={`p-10 transition-colors duration-700 ${isHighOsm ? 'bg-rose-50 border-b border-rose-100' : 'bg-gradient-to-br from-blue-50/80 to-indigo-100/80 border-b border-indigo-100'}`}>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
                   <p className="text-slate-400 text-xs font-black mb-2 uppercase tracking-[0.2em]">综合热卡供给 (含 EN+PN)</p>
-                  <h3 className="text-6xl font-black tracking-tight">{totalCal.toFixed(1)} <span className="text-2xl font-normal opacity-50 ml-1">kcal/kg</span></h3>
+                  <h3 className="text-6xl font-black tracking-tight text-slate-800">{totalCal.toFixed(1)} <span className="text-2xl font-normal opacity-50 ml-1">kcal/kg</span></h3>
                 </div>
-                <div className={`p-4 rounded-3xl border backdrop-blur-md transition-all duration-500 ${isHighOsm ? 'bg-rose-500/20 border-rose-500 animate-pulse ring-4 ring-rose-500/20' : 'bg-white/10 border-white/10'}`}>
-                  <p className={`text-[10px] font-black mb-1 uppercase tracking-widest ${isHighOsm ? 'text-rose-400' : 'text-slate-400'}`}>安全阈值监测</p>
+                <div className={`p-4 rounded-3xl border backdrop-blur-md transition-all duration-500 ${isHighOsm ? 'bg-rose-500/10 border-rose-500 ring-4 ring-rose-500/10' : 'bg-white/60 border-indigo-200'}`}>
+                  <p className={`text-[10px] font-black mb-1 uppercase tracking-widest ${isHighOsm ? 'text-rose-600' : 'text-slate-400'}`}>安全阈值监测</p>
                   <div className="flex gap-4">
                     <div>
                       <div className="flex items-center">
-                        <span className="text-[10px] block opacity-60">渗透压</span>
-                        {isHighOsm && <AlertTriangle className="w-2.5 h-2.5 ml-1 text-rose-400" />}
+                        <span className="text-[10px] block opacity-60 text-slate-500">渗透压</span>
+                        {isHighOsm && <AlertTriangle className="w-2.5 h-2.5 ml-1 text-rose-600" />}
                       </div>
-                      <span className={`text-lg font-black ${isHighOsm ? 'text-rose-400' : 'text-emerald-400'}`}>{results.osmolarity.toFixed(0)}</span>
+                      <span className={`text-lg font-black ${isHighOsm ? 'text-rose-600' : 'text-emerald-600'}`}>{results.osmolarity.toFixed(0)}</span>
                     </div>
-                    <div className="w-px h-8 bg-white/10"></div>
+                    <div className="w-px h-8 bg-slate-200"></div>
                     <div>
-                      <span className="text-[10px] block opacity-60">糖浓度</span>
-                      <span className={`text-lg font-black ${results.glucoseConcentration > 12.5 ? 'text-amber-400' : 'text-emerald-400'}`}>{results.glucoseConcentration.toFixed(1)}%</span>
+                      <span className="text-[10px] block opacity-60 text-slate-500">糖浓度</span>
+                      <span className={`text-lg font-black ${results.glucoseConcentration > 12.5 ? 'text-amber-600' : 'text-emerald-600'}`}>{results.glucoseConcentration.toFixed(1)}%</span>
                     </div>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ const CalculatorAdvanced: React.FC = () => {
             <div className="text-xs leading-relaxed">
               <p className="font-bold mb-1">共识核验提醒：</p>
               <p>当前糖浓度 {results.glucoseConcentration.toFixed(1)}% ({results.glucoseConcentration > 12.5 ? '经中心静脉' : '可外周静脉'})。渗透压 {results.osmolarity.toFixed(0)} mOsm/L。</p>
-              {isHighOsm && <p className="font-black mt-1">警告：渗透压过高，请务必核对输注途径！</p>}
+              {isHighOsm && <p className="font-black mt-1 text-rose-600">警告：渗透压过高，请务必核对输注途径！</p>}
             </div>
           </div>
         </div>

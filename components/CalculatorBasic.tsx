@@ -50,28 +50,28 @@ const CalculatorBasic: React.FC = () => {
       <div className="lg:col-span-5 space-y-8">
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden">
           <div className="absolute top-0 right-0 px-5 py-2 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase rounded-bl-3xl tracking-widest">
-            {isTerm ? 'TERM' : 'PRETERM'}
+            {isTerm ? '足月儿 TERM' : '早产儿 PRETERM'}
           </div>
-          <h3 className="text-xs font-black text-slate-300 uppercase tracking-widest mb-8 flex items-center">
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center">
             <Baby className="w-4 h-4 mr-2 text-indigo-400" />
-            Patient Profile
+            患儿档案 Patient Profile
           </h3>
           <div className="grid grid-cols-2 gap-6">
             <InputField label="DOL (日龄)" value={inputs.dol} onChange={(v) => updateInput('dol', v)} icon={<Calendar className="w-4 h-4" />} />
             <InputField label="BW (出生体重 g)" value={inputs.birthWeight} onChange={(v) => updateInput('birthWeight', v)} icon={<Droplets className="w-4 h-4" />} />
-            <InputField label="Weight (当前 kg)" value={inputs.weight} onChange={(v) => updateInput('weight', v)} step={0.01} />
-            <InputField label="Enteral (奶量 ml)" value={milkVolume} onChange={setMilkVolume} icon={<Info className="w-4 h-4" />} />
+            <InputField label="Weight (当前体重 kg)" value={inputs.weight} onChange={(v) => updateInput('weight', v)} step={0.01} />
+            <InputField label="Enteral (肠内/奶量 ml)" value={milkVolume} onChange={setMilkVolume} icon={<Info className="w-4 h-4" />} />
           </div>
         </div>
 
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/40 space-y-10">
-          <h3 className="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center">
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center">
             <CalcIcon className="w-4 h-4 mr-2 text-indigo-400" />
-            Nutrition Goals
+            营养目标指标 Nutrition Goals
           </h3>
           
           <SliderWithRange 
-            label="Total Liquid (ml/kg)" 
+            label="Total Liquid (总液体量 ml/kg)" 
             value={inputs.totalLiquidTarget} 
             onChange={(v) => updateInput('totalLiquidTarget', v)} 
             range={ranges.liq} 
@@ -79,7 +79,7 @@ const CalculatorBasic: React.FC = () => {
           />
 
           <SliderWithRange 
-            label="GIR (mg/kg/min)" 
+            label="GIR (糖速 mg/kg/min)" 
             value={inputs.gir} 
             onChange={(v) => updateInput('gir', v)} 
             range={ranges.gir} 
@@ -88,52 +88,59 @@ const CalculatorBasic: React.FC = () => {
           />
 
           <div className="grid grid-cols-2 gap-8">
-            <InputFieldWithRange label="AA (g/kg)" value={inputs.aaTarget} onChange={(v) => updateInput('aaTarget', v)} range={ranges.aa} />
-            <InputFieldWithRange label="Fat (g/kg)" value={inputs.fatTarget} onChange={(v) => updateInput('fatTarget', v)} range={ranges.fat} />
+            <InputFieldWithRange label="AA (氨基酸 g/kg)" value={inputs.aaTarget} onChange={(v) => updateInput('aaTarget', v)} range={ranges.aa} />
+            <InputFieldWithRange label="Fat (脂肪乳 g/kg)" value={inputs.fatTarget} onChange={(v) => updateInput('fatTarget', v)} range={ranges.fat} />
           </div>
 
           <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100">
              <div className="flex justify-between items-center mb-4">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Electrolytes</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">电解质 Electrolytes</span>
                 <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter ${inputs.dol <= 2 ? 'bg-slate-200 text-slate-500' : 'bg-emerald-100 text-emerald-700'}`}>
-                  {inputs.dol <= 2 ? 'Transition Phase' : 'Stable Phase'}
+                  {inputs.dol <= 2 ? '过渡期 Transition' : '稳定期 Stable'}
                 </span>
              </div>
              <div className="grid grid-cols-2 gap-6">
-                <InputFieldWithRange label="Na (mmol/kg)" value={inputs.naTarget} onChange={(v) => updateInput('naTarget', v)} range={ranges.na} disabled={inputs.dol <= 2} />
-                <InputFieldWithRange label="K (mmol/kg)" value={inputs.kTarget} onChange={(v) => updateInput('kTarget', v)} range={ranges.k} disabled={inputs.dol <= 2} />
+                <InputFieldWithRange label="Na (钠 mmol/kg)" value={inputs.naTarget} onChange={(v) => updateInput('naTarget', v)} range={ranges.na} disabled={inputs.dol <= 2} />
+                <InputFieldWithRange label="K (钾 mmol/kg)" value={inputs.kTarget} onChange={(v) => updateInput('kTarget', v)} range={ranges.k} disabled={inputs.dol <= 2} />
              </div>
           </div>
         </div>
       </div>
 
-      {/* Result Side */}
+      {/* Result Side - Light Blue Frosted Glass */}
       <div className="lg:col-span-7 space-y-8">
-        <div className={`rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group transition-all duration-700 ${isHighOsm ? 'bg-rose-600 ring-8 ring-rose-500/20' : 'bg-[#1c1c1e] shadow-slate-300'}`}>
-          <div className="absolute top-0 right-0 p-10 opacity-5 transition-transform group-hover:scale-125 duration-1000">
-            <CalcIcon className="w-48 h-48" />
+        <div className={`rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group transition-all duration-700 border border-white/60 ${isHighOsm ? 'bg-rose-50 ring-8 ring-rose-500/10' : 'bg-gradient-to-br from-blue-50/90 to-indigo-100/90 shadow-indigo-100'}`}>
+          {/* Background Decor */}
+          <div className="absolute top-0 right-0 p-10 opacity-[0.03] transition-transform group-hover:scale-125 duration-1000">
+            <CalcIcon className={`w-48 h-48 ${isHighOsm ? 'text-rose-900' : 'text-indigo-900'}`} />
           </div>
+          
           <div className="relative z-10 space-y-8">
             <div className="flex justify-between items-center">
-              <p className="text-white/40 text-[11px] font-black uppercase tracking-[0.3em]">Execution Proposal</p>
-              <div className={`px-4 py-1.5 rounded-full text-[10px] font-black flex items-center backdrop-blur-md border shadow-lg ${isHighOsm ? 'bg-white/10 border-white/20 text-white animate-pulse' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'}`}>
+              <p className={`text-[11px] font-black uppercase tracking-[0.3em] ${isHighOsm ? 'text-rose-400' : 'text-indigo-400'}`}>执行建议方案 Execution Proposal</p>
+              <div className={`px-4 py-1.5 rounded-full text-[10px] font-black flex items-center backdrop-blur-md border shadow-sm ${isHighOsm ? 'bg-rose-500 text-white border-rose-400' : 'bg-white/60 border-indigo-200 text-indigo-700'}`}>
                 {isHighOsm && <AlertTriangle className="w-3 h-3 mr-2" />}
-                OSM: {results.osmolarity.toFixed(0)} mOsm/L
+                OSM (渗透压): {results.osmolarity.toFixed(0)} mOsm/L
               </div>
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-8xl font-black tracking-tighter flex items-baseline">
-                {results.flowRate.toFixed(1)} <span className="text-3xl font-medium text-white/40 ml-4">ml/h</span>
-              </h2>
-              {isHighOsm && <p className="text-rose-200 font-bold text-xs uppercase tracking-widest flex items-center"><AlertTriangle className="w-3.5 h-3.5 mr-2" /> 严重警告：渗透压超标，严禁外周输注</p>}
+              <div className="flex items-center gap-4">
+                <h2 className={`text-8xl font-black tracking-tighter flex items-baseline ${isHighOsm ? 'text-rose-900' : 'text-slate-800'}`}>
+                  {results.flowRate.toFixed(1)} <span className="text-3xl font-medium opacity-40 ml-4">ml/h</span>
+                </h2>
+                <div className="text-xs font-bold text-slate-400 leading-tight">
+                  静脉<br/>液速
+                </div>
+              </div>
+              {isHighOsm && <p className="text-rose-600 font-bold text-xs uppercase tracking-widest flex items-center"><AlertTriangle className="w-3.5 h-3.5 mr-2" /> 严重警告：渗透压超标，严禁外周输注</p>}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-white/10">
-              <ResultMetric label="G. Conc" value={`${results.glucoseConcentration.toFixed(1)}%`} status={results.glucoseConcentration > 12.5 ? 'warn' : 'ok'} />
-              <ResultMetric label="Energy" value={`${results.totalCalories.toFixed(0)} kcal`} />
-              <ResultMetric label="NPC:N" value={results.cnRatio.toFixed(1)} status={isCnRatioSafe ? 'ok' : 'warn'} />
-              <ResultMetric label="Lipid %" value={`${results.npcLipidRatio.toFixed(0)}%`} status={isLipidNpcSafe ? 'ok' : 'warn'} />
+            <div className={`grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t ${isHighOsm ? 'border-rose-200' : 'border-indigo-200/50'}`}>
+              <ResultMetric label="G. Conc (糖浓度)" value={`${results.glucoseConcentration.toFixed(1)}%`} status={results.glucoseConcentration > 12.5 ? 'warn' : 'ok'} darkText />
+              <ResultMetric label="Energy (热卡)" value={`${results.totalCalories.toFixed(0)} kcal`} darkText />
+              <ResultMetric label="NPC:N (热氮比)" value={results.cnRatio.toFixed(1)} status={isCnRatioSafe ? 'ok' : 'warn'} darkText />
+              <ResultMetric label="Lipid % (脂肪占比)" value={`${results.npcLipidRatio.toFixed(0)}%`} status={isLipidNpcSafe ? 'ok' : 'warn'} darkText />
             </div>
           </div>
         </div>
@@ -142,7 +149,7 @@ const CalculatorBasic: React.FC = () => {
         <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-xl shadow-slate-200/40 space-y-8">
           <div className="flex justify-between items-end">
             <div className="space-y-1">
-               <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Energy Balance</h4>
+               <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-widest">能量构成分析 Energy Balance</h4>
                <p className="text-lg font-black text-slate-800">静脉能量构成比例</p>
             </div>
             <div className="flex gap-4">
@@ -167,16 +174,16 @@ const CalculatorBasic: React.FC = () => {
         {/* Prescription Breakdown */}
         <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
           <div className="bg-slate-50 border-b border-slate-100 px-10 py-6 flex justify-between items-center">
-            <h4 className="font-black text-slate-800 tracking-tight">24h 溶液配置明细</h4>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Vol: {(results.gs10 + results.gs50 + results.aaVol + results.fatVol + results.naVol + results.kVol).toFixed(1)} ml</span>
+            <h4 className="font-black text-slate-800 tracking-tight">24h 溶液配置明细 Prescription Breakdown</h4>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Vol (总容积): {(results.gs10 + results.gs50 + results.aaVol + results.fatVol + results.naVol + results.kVol).toFixed(1)} ml</span>
           </div>
           <div className="p-10 grid grid-cols-2 md:grid-cols-3 gap-10">
-            <ResultItem label="10% 葡萄糖" value={results.gs10.toFixed(1)} unit="ml" color="text-amber-600" />
-            <ResultItem label="50% 葡萄糖" value={results.gs50.toFixed(1)} unit="ml" color="text-amber-700" />
-            <ResultItem label="6% 氨基酸" value={results.aaVol.toFixed(1)} unit="ml" color="text-indigo-600" />
-            <ResultItem label="20% 脂肪乳" value={results.fatVol.toFixed(1)} unit="ml" color="text-emerald-600" />
-            <ResultItem label="10% NaCl" value={results.naVol.toFixed(1)} unit="ml" color="text-slate-600" />
-            <ResultItem label="10% KCl" value={results.kVol.toFixed(1)} unit="ml" color="text-slate-600" />
+            <ResultItem label="10% 葡萄糖 (GS)" value={results.gs10.toFixed(1)} unit="ml" color="text-amber-600" />
+            <ResultItem label="50% 葡萄糖 (GS)" value={results.gs50.toFixed(1)} unit="ml" color="text-amber-700" />
+            <ResultItem label="6% 氨基酸 (AA)" value={results.aaVol.toFixed(1)} unit="ml" color="text-indigo-600" />
+            <ResultItem label="20% 脂肪乳 (Lipid)" value={results.fatVol.toFixed(1)} unit="ml" color="text-emerald-600" />
+            <ResultItem label="10% NaCl (钠)" value={results.naVol.toFixed(1)} unit="ml" color="text-slate-600" />
+            <ResultItem label="10% KCl (钾)" value={results.kVol.toFixed(1)} unit="ml" color="text-slate-600" />
           </div>
         </div>
       </div>
@@ -185,10 +192,10 @@ const CalculatorBasic: React.FC = () => {
 };
 
 // Polished Sub-components
-const ResultMetric: React.FC<{ label: string, value: string | number, status?: 'ok' | 'warn' }> = ({ label, value, status }) => (
+const ResultMetric: React.FC<{ label: string, value: string | number, status?: 'ok' | 'warn', darkText?: boolean }> = ({ label, value, status, darkText }) => (
   <div className="space-y-1">
-    <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">{label}</p>
-    <p className={`text-xl font-black ${status === 'warn' ? 'text-amber-400' : 'text-white'}`}>{value}</p>
+    <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${darkText ? 'text-slate-400' : 'text-white/30'}`}>{label}</p>
+    <p className={`text-xl font-black ${status === 'warn' ? 'text-rose-600' : (darkText ? 'text-slate-800' : 'text-white')}`}>{value}</p>
   </div>
 );
 
@@ -238,7 +245,7 @@ const SliderWithRange: React.FC<{
     />
     <div className="flex justify-between text-[9px] text-slate-300 font-black uppercase tracking-widest">
       <span>{range[0]}</span>
-      <span>Recommended Range</span>
+      <span>推荐范围 Recommended Range</span>
       <span>{range[1]}</span>
     </div>
   </div>
