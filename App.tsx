@@ -54,7 +54,7 @@ const App: React.FC = () => {
         <div className="container mx-auto px-6 text-center">
           <div className="flex justify-center items-center space-x-2 text-slate-400 mb-2">
             <Info className="w-4 h-4" />
-            <span className="text-[11px] font-medium">本工具仅供临床辅助参考。所有治疗决策应遵循执业医师临床判断。</span>
+            <span className="text-[11px] font-medium">所有治疗决策应遵循执业医师临床判断。</span>
           </div>
           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">&copy; 2025 NEONATAL NUTRITION SUITE • LZRYEK DESIGN</p>
         </div>
