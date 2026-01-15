@@ -75,6 +75,7 @@ const CalculatorBasic: React.FC = () => {
             value={inputs.totalLiquidTarget} 
             onChange={(v) => updateInput('totalLiquidTarget', v)} 
             range={ranges.liq} 
+            limits={[40, 160]}
             color="indigo"
           />
 
@@ -107,10 +108,9 @@ const CalculatorBasic: React.FC = () => {
         </div>
       </div>
 
-      {/* Result Side - Light Blue Frosted Glass */}
+      {/* Result Side */}
       <div className="lg:col-span-7 space-y-8">
         <div className={`rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group transition-all duration-700 border border-white/60 ${isHighOsm ? 'bg-rose-50 ring-8 ring-rose-500/10' : 'bg-gradient-to-br from-blue-50/90 to-indigo-100/90 shadow-indigo-100'}`}>
-          {/* Background Decor */}
           <div className="absolute top-0 right-0 p-10 opacity-[0.03] transition-transform group-hover:scale-125 duration-1000">
             <CalcIcon className={`w-48 h-48 ${isHighOsm ? 'text-rose-900' : 'text-indigo-900'}`} />
           </div>
@@ -191,7 +191,6 @@ const CalculatorBasic: React.FC = () => {
   );
 };
 
-// Polished Sub-components
 const ResultMetric: React.FC<{ label: string, value: string | number, status?: 'ok' | 'warn', darkText?: boolean }> = ({ label, value, status, darkText }) => (
   <div className="space-y-1">
     <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${darkText ? 'text-slate-400' : 'text-white/30'}`}>{label}</p>
@@ -226,30 +225,36 @@ const SliderWithRange: React.FC<{
   value: number;
   onChange: (v: number) => void;
   range: number[];
+  limits?: number[]; // [min, max] for the slider itself
   step?: number;
   color: string;
-}> = ({ label, value, onChange, range, step = 1, color }) => (
-  <div className="space-y-5">
-    <div className="flex justify-between items-center">
-      <label className="text-xs font-black text-slate-700 uppercase tracking-tight">{label}</label>
-      <div className={`px-4 py-1 rounded-xl bg-${color}-50 text-${color}-600 font-black text-sm`}>{value}</div>
+}> = ({ label, value, onChange, range, limits, step = 1, color }) => {
+  const minLimit = limits ? limits[0] : range[0];
+  const maxLimit = limits ? limits[1] : range[1];
+
+  return (
+    <div className="space-y-5">
+      <div className="flex justify-between items-center">
+        <label className="text-xs font-black text-slate-700 uppercase tracking-tight">{label}</label>
+        <div className={`px-4 py-1 rounded-xl bg-${color}-50 text-${color}-600 font-black text-sm`}>{value}</div>
+      </div>
+      <input
+        type="range"
+        min={minLimit}
+        max={maxLimit}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className={`w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-${color}-500`}
+      />
+      <div className="flex justify-between text-[9px] text-slate-300 font-black uppercase tracking-widest">
+        <span>{range[0]}</span>
+        <span>推荐范围 Recommended Range</span>
+        <span>{range[1]}</span>
+      </div>
     </div>
-    <input
-      type="range"
-      min={range[0]}
-      max={range[1]}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value))}
-      className={`w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-${color}-500`}
-    />
-    <div className="flex justify-between text-[9px] text-slate-300 font-black uppercase tracking-widest">
-      <span>{range[0]}</span>
-      <span>推荐范围 Recommended Range</span>
-      <span>{range[1]}</span>
-    </div>
-  </div>
-);
+  );
+};
 
 const InputFieldWithRange: React.FC<{
   label: string;

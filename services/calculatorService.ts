@@ -3,10 +3,10 @@ import { PNInputs, PNResults } from '../types';
 import { CONCENTRATIONS, CALORIES } from '../constants';
 
 /**
- * 根据日龄和体重获取共识推荐区间
+ * 根据日龄和体重获取共识推荐区间 (基于 2025 专家共识表 2)
  */
 export const getConsensusRanges = (dol: number, bw: number, isTerm: boolean) => {
-  // 1. 液体量区间 (表2)
+  // 1. 液体量区间 (表 2)
   let liq = [60, 80];
   if (isTerm) {
     if (dol === 1) liq = [40, 60];
@@ -36,15 +36,14 @@ export const getConsensusRanges = (dol: number, bw: number, isTerm: boolean) => 
     }
   }
 
-  // 2. 糖速区间 (表3)
+  // 2. 糖速区间 (表 3)
   const gir = isTerm ? [3.0, 10.0] : [4.0, 12.0];
 
   // 3. 氨基酸与脂肪乳 (阶梯递增)
-  // 起始 1.5-2.5 -> 3.0-3.5
   const aa = [1.5, 3.5];
   const fat = [1.0, 3.5];
 
-  // 4. 电解质 (表4)
+  // 4. 电解质 (表 4)
   let na = [2.0, 3.0];
   if (dol <= 2) na = [0, 0];
   else if (!isTerm && bw < 1500 && dol > 14) na = [2.0, 4.0];
@@ -93,13 +92,9 @@ export const calculatePN = (inputs: PNInputs): PNResults => {
     fat: Math.round((fatCal / totalPnCal) * 100),
   };
 
-  // 热氮比计算 (NPC:N)
-  // 1g 氮 (N) = 6.25g 氨基酸
   const nitrogenGrams = (aaTarget * weight) / 6.25;
-  const npc = glucoseCal + fatCal; // 非蛋白热量
+  const npc = glucoseCal + fatCal;
   const cnRatio = nitrogenGrams > 0 ? npc / nitrogenGrams : 0;
-  
-  // 非蛋白热量中脂质占比
   const npcLipidRatio = npc > 0 ? (fatCal / npc) * 100 : 0;
 
   const osmolarity = pnLiquid > 0 ? ((actualGlucoseGrams / pnLiquid) * 1000 * 5) + 

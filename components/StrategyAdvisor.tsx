@@ -19,6 +19,7 @@ import {
   HeartPulse
 } from 'lucide-react';
 import { CONCENTRATIONS, CALORIES } from '../constants';
+import { getConsensusRanges } from '../services/calculatorService';
 
 const StrategyAdvisor: React.FC = () => {
   const [dol, setDol] = useState<number>(1);
@@ -41,34 +42,10 @@ const StrategyAdvisor: React.FC = () => {
     else setIsTerm(false);
   }, [bw]);
 
-  // 根据表 4 动态获取推荐范围
-  const consensusRanges = useMemo(() => {
-    let liq = [60, 90]; 
-    if (isTerm) {
-      if (dol === 1) liq = [40, 60];
-      else if (dol >= 6) liq = [140, 170];
-    }
+  // 获取共识范围
+  const consensusRanges = useMemo(() => getConsensusRanges(dol, bw, isTerm), [dol, bw, isTerm]);
 
-    // 钠、钾范围逻辑 (表 4)
-    let na = [0, 3];
-    let k = [0, 3];
-
-    if (dol >= 7) { // 稳定生长期
-      if (isTerm) { na = [2, 3]; k = [1.5, 3]; }
-      else if (bw >= 1500) { na = [3, 5]; k = [1, 3]; }
-      else { na = [3, 5]; k = [2, 5]; }
-    } else if (dol >= 4) { // 恢复期/过渡期后期
-      na = [2, 5]; k = [1, 3];
-    } else { // 过渡期初期
-      na = [0, 2]; k = [0, 3];
-    }
-
-    return { 
-      liq, aa: [1.5, 2.5], fat: [1.0, 2.0], gir: [4.0, 12.0], na, k
-    };
-  }, [dol, bw, isTerm]);
-
-  // 当范围改变时，自动重置电解质目标（可选，通常建议临床手动调节，此处设为范围下限）
+  // 同步电解质目标
   useEffect(() => {
     setTargetNa(prev => Math.max(consensusRanges.na[0], Math.min(consensusRanges.na[1], prev)));
     setTargetK(prev => Math.max(consensusRanges.k[0], Math.min(consensusRanges.k[1], prev)));
@@ -82,12 +59,10 @@ const StrategyAdvisor: React.FC = () => {
     const aaVol = (targetAA * wKg) / CONCENTRATIONS.AA_6_PERCENT;
     const fatVol = (targetFat * wKg) / CONCENTRATIONS.FAT_20_PERCENT;
     
-    // 电解质体积自动计算
     const naVol = (targetNa * wKg) / CONCENTRATIONS.NACL_10_PERCENT;
     const kVol = (targetK * wKg) / CONCENTRATIONS.KCL_10_PERCENT; 
 
     const totalGlucoseGrams = targetGIR * wKg * 1.44;
-    // 扣除固定容积 (AA, Fat, Na, K, 以及微量元素/维生素预留空间约 1-2ml/kg)
     const fixedVol = aaVol + fatVol + naVol + kVol + (wKg * 2.0);
     const remainingVol = Math.max(5, pnVol - fixedVol);
 
@@ -223,7 +198,7 @@ const StrategyAdvisor: React.FC = () => {
               <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">营养目标调节</h3>
             </div>
             <div className="space-y-10">
-              <PathSlider label="液体总量 (ML/KG/D)" value={targetLiquid} onChange={setTargetLiquid} range={consensusRanges.liq} color="text-cyan-700" accent="accent-cyan-600" />
+              <PathSlider label="液体总量 (ML/KG/D)" value={targetLiquid} onChange={setTargetLiquid} range={consensusRanges.liq} limits={[40, 160]} color="text-cyan-700" accent="accent-cyan-600" />
               <PathSlider label="氨基酸 (G/KG/D)" value={targetAA} onChange={setTargetAA} range={consensusRanges.aa} step={0.1} color="text-indigo-600" accent="accent-indigo-500" />
               <PathSlider label="脂肪乳 (G/KG/D)" value={targetFat} onChange={setTargetFat} range={consensusRanges.fat} step={0.1} color="text-emerald-600" accent="accent-emerald-500" />
               <PathSlider label="糖速 GIR (MG/KG/MIN)" value={targetGIR} onChange={setTargetGIR} range={consensusRanges.gir} step={0.1} color="text-amber-600" accent="accent-amber-500" />
@@ -379,30 +354,35 @@ const PathSlider: React.FC<{
   value: number;
   onChange: (v: number) => void;
   range: number[];
+  limits?: number[];
   step?: number;
   color?: string;
   accent?: string;
-}> = ({ label, value, onChange, range, step = 1, color = 'text-cyan-700', accent = 'accent-cyan-600' }) => (
-  <div className="space-y-5">
-    <div className="flex justify-between items-center">
-      <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest">{label}</label>
-      <span className={`text-xl font-black ${color}`}>{value}</span>
+}> = ({ label, value, onChange, range, limits, step = 1, color = 'text-cyan-700', accent = 'accent-cyan-600' }) => {
+  const minLimit = limits ? limits[0] : range[0];
+  const maxLimit = limits ? limits[1] : range[1];
+
+  return (
+    <div className="space-y-5">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-col">
+          <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest">{label}</label>
+          <span className="text-[9px] text-slate-400">推荐: {range[0]} - {range[1]}</span>
+        </div>
+        <span className={`text-xl font-black ${color}`}>{value}</span>
+      </div>
+      <input
+        type="range"
+        min={minLimit}
+        max={maxLimit}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className={`w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer transition-all ${accent}`}
+      />
     </div>
-    <input
-      type="range"
-      min={range[0]}
-      max={range[1]}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value))}
-      className={`w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer transition-all ${accent}`}
-    />
-    <div className="flex justify-between text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-      <span>MIN {range[0]}</span>
-      <span>MAX {range[1]}</span>
-    </div>
-  </div>
-);
+  );
+};
 
 const TableDetailRow: React.FC<{
   label: string;

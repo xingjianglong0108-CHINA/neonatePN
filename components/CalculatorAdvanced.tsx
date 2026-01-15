@@ -25,7 +25,7 @@ const CalculatorAdvanced: React.FC = () => {
 
   // 同步范围
   useEffect(() => {
-    setLiquidPerKg(ranges.liq[0]);
+    setLiquidPerKg(Math.max(ranges.liq[0], Math.min(ranges.liq[1], liquidPerKg)));
     setGir(ranges.gir[0]);
     if (dol > 2) { setNaTarget(ranges.na[0] || 2.0); setKTarget(ranges.k[0] || 1.5); }
     else { setNaTarget(0); setKTarget(0); }
@@ -78,7 +78,7 @@ const CalculatorAdvanced: React.FC = () => {
             </div>
             
             <div className="space-y-4 pt-4 border-t border-slate-100">
-              <RangeInput label="总液体量目标" value={liquidPerKg} onChange={setLiquidPerKg} range={ranges.liq} unit="ml/kg" />
+              <RangeInput label="总液体量目标" value={liquidPerKg} onChange={setLiquidPerKg} range={ranges.liq} limits={[40, 160]} unit="ml/kg" />
               <RangeInput label="氨基酸目标" value={aaTarget} onChange={setAaTarget} range={ranges.aa} unit="g/kg" step={0.1} />
               <RangeInput label="脂肪乳目标" value={fatTarget} onChange={setFatTarget} range={ranges.fat} unit="g/kg" step={0.1} />
               <RangeInput label="糖速 GIR" value={gir} onChange={setGir} range={ranges.gir} unit="mg/kg/min" step={0.1} />
@@ -103,7 +103,7 @@ const CalculatorAdvanced: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Display Area - Header Changed to Light Blue */}
+        {/* Main Display Area */}
         <div className="lg:col-span-8 space-y-6">
           <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
             <div className={`p-10 transition-colors duration-700 ${isHighOsm ? 'bg-rose-50 border-b border-rose-100' : 'bg-gradient-to-br from-blue-50/80 to-indigo-100/80 border-b border-indigo-100'}`}>
@@ -175,7 +175,6 @@ const CalculatorAdvanced: React.FC = () => {
   );
 };
 
-// Sub-components used in CalculatorAdvanced
 const InputBox: React.FC<{
   label: string;
   value: number;
@@ -203,25 +202,34 @@ const RangeInput: React.FC<{
   value: number;
   onChange: (v: number) => void;
   range: number[];
+  limits?: number[];
   unit: string;
   step?: number;
-}> = ({ label, value, onChange, range, unit, step = 1 }) => (
-  <div className="space-y-3">
-    <div className="flex justify-between items-center">
-      <label className="text-xs font-bold text-slate-600">{label}</label>
-      <span className="text-sm font-black text-indigo-600">{value} <small className="text-[10px] opacity-50">{unit}</small></span>
+}> = ({ label, value, onChange, range, limits, unit, step = 1 }) => {
+  const minLimit = limits ? limits[0] : range[0];
+  const maxLimit = limits ? limits[1] : range[1];
+  
+  return (
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-col">
+          <label className="text-xs font-bold text-slate-600">{label}</label>
+          <span className="text-[9px] text-slate-400">推荐: {range[0]} - {range[1]}</span>
+        </div>
+        <span className="text-sm font-black text-indigo-600">{value} <small className="text-[10px] opacity-50">{unit}</small></span>
+      </div>
+      <input
+        type="range"
+        min={minLimit}
+        max={maxLimit}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+      />
     </div>
-    <input
-      type="range"
-      min={range[0]}
-      max={range[1]}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value))}
-      className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-    />
-  </div>
-);
+  );
+};
 
 const StatItem: React.FC<{ label: string, value: string | number, unit: string, color: string }> = ({ label, value, unit, color }) => (
   <div className="space-y-1">
